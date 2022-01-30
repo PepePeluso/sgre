@@ -1,11 +1,14 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-import {AppRouter} from "./routes/AppRouter"
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { AppRouter } from "./routes/AppRouter"
 
 function App() {
   return (
     <div>
-      
+      <div>
+        <AppRouter/>
+      </div>
     </div>
   );
 }
