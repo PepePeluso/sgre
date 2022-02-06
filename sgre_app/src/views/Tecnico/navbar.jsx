@@ -1,7 +1,5 @@
 import React, { Fragment } from "react"
 import { Link } from "react-router-dom"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserCircle } from "@fortawesome/free-solid-svg-icons"
 
 const Navbar = () => {
     return (
@@ -11,12 +9,25 @@ const Navbar = () => {
                     <Link to="/" className="navbar-brand h1">
                         SGRE Zona 1
                     </Link>
-                    <ul class="navbar-nav mr-auto" />
-                    <div className="navbar-text">
+                    <ul className="navbar-nav mr-auto" />
+                    <ul className="navbar-nav">
+                        <li className="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Bienvenido, lolito</a>
+                            <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li>
+                                    <Link to="/login" className="dropdown-item">
+                                        Cerrar sesión
+                                    </Link>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
 
-                    </div>
                 </div>
             </nav>
         </Fragment>
     )
 }
+
+export default Navbar

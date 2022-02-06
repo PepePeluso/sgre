@@ -11,7 +11,7 @@ const Navbar = () => {
                     <Link to="/" className="navbar-brand h1">
                         SGRE Zona 1
                     </Link>
-                    <ul class="navbar-nav mr-auto" />
+                    <ul className="navbar-nav mr-auto" />
                     <Link to="/login" className="navbar-text">
                         <FontAwesomeIcon icon={faUserCircle} />
                         <strong>Iniciar Sesión</strong> 
