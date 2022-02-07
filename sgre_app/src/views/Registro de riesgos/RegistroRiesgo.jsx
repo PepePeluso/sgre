@@ -11,6 +11,9 @@ const RegistroRiesgo = () => {
     const [TipoRiesgo, setTipoRiesgo] = useState([])
     const { position } = useSelector(state => state.position)
     const urlTipo = "https://backend-sgre.herokuapp.com/tipo"
+    const urlPostUbi = "https://backend-sgre.herokuapp.com/creaubicacion"
+    const urlPostRegistro = "https://backend-sgre.herokuapp.com/creariesgo"
+    const urlPostFechaEstado = "https://backend-sgre.herokuapp.com/creafechaest"
 
     const [loadTipo, setLoadTipo] = useState(true)
 
@@ -77,10 +80,6 @@ const RegistroRiesgo = () => {
     };
 
     const RegistrarRiesgo = async () => {
-        console.log(LocalizacionForm)
-        console.log(UsuarioForm)
-        console.log(RiesgoForm)
-
         if (tipo_id === 0) {
             Swal.fire("Error", "Seleccione el tipo de riesgo", "error")
         } else if (rie_descripcion === "") {
@@ -95,12 +94,41 @@ const RegistroRiesgo = () => {
         } else {
             const { value: confirm } = await Swal.fire({ title: "Atención", text: "¿Está seguro de registrar este riesgo?", icon: "info", showCancelButton: true })
             if (confirm) {
-                const ubicacionString = "?" + stringify(LocalizacionForm)
-                const riesgoString = "?" + stringify(RiesgoForm) + stringify(UsuarioForm)
-                const fechaEstadoString = "?" + stringify(fechaEstado)
+                const ubicacionString = "?" + stringify(LocalizacionForm,{encode:false})
+                var riesgoString = "?" + stringify(RiesgoForm,{encode:false}) + "&" + stringify(UsuarioForm,{encode:false})
+                var fechaEstadoString = "?" + stringify(fechaEstado,{encode:false})
                 console.log(ubicacionString)
                 console.log(riesgoString)
                 console.log(fechaEstadoString)
+                try {
+                    const postUbi = await axios.post(urlPostUbi + ubicacionString)
+                    if (postUbi.data.code) {
+                        console.log("primer error")
+                        console.log(postUbi.data.message)
+                        Swal.fire("Error", postUbi.data.message, "error")
+                    } else {
+                        riesgoString = riesgoString.replace("ubi_id=0","ubi_id="+postUbi.data.body.ubi_id)
+                        const postRiesgo = await axios.post(urlPostRegistro + riesgoString)
+                        if (postRiesgo.data.code) {
+                            console.log("segundo error")
+                            console.log(postRiesgo.data.message)
+                            Swal.fire("Error", postRiesgo.data.message, "error")
+                        } else {
+                            fechaEstadoString = fechaEstadoString.replace("rie_idriesgo=0","rie_idriesgo="+postRiesgo.data.body.rie_idriesgo)
+                            const postFechaEstado = await axios.post(urlPostFechaEstado + fechaEstadoString)
+                            if (postFechaEstado.data.code) {
+                                console.log("tercer error")
+                                console.log(postFechaEstado.data.message)
+                                Swal.fire("Error", postFechaEstado.data.message, "error")
+                            } else {
+                                Swal.fire("Perfecto", "Riesgo registrado con éxito", "success")
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error(err)
+                    Swal.fire("Error", "Error de la app", "error")
+                }
             }
         }
     }

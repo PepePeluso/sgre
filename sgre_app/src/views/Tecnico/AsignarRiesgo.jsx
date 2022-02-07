@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from "react-router-dom"
+import Swal from "sweetalert2"
+import { stringify } from "query-string"
 import axios from "axios"
 import Navbar from "./navbar"
 
@@ -21,6 +23,8 @@ const AsignarRiesgo = () => {
     const [lastValueNat, setLasValueNat] = useState(0)
     const [lastValueAnt, setLasValueAnt] = useState(0)
     const [lastValueOth, setLasValueOth] = useState(0)
+
+    const hoy = new Date()
 
     const origenes = async () => {
         const resp = await axios.get(urlOrigen)
@@ -90,17 +94,38 @@ const AsignarRiesgo = () => {
     }
 
     const [riesgoForm, setRiesgoForm] = useState({
-        origen: 0,
-        nivel: 0,
-        estado: 3,
-        unidad: 0,
+        ori_id: 0,
+        niv_id: 0,
+        est_id: 3,
+        unidad_id: 0,
         rie_codigo: ""
     })
 
-    const { origen, nivel, unidad} = riesgoForm
+    const { ori_id, niv_id, unidad_id} = riesgoForm
+
+    const [fechaEstado, setFechaEstado] = useState({
+        rie_idriesgo: riesgo.rie_idriesgo,
+        est_id: 3,
+        fec_fecha: hoy.getFullYear() + "-" + (hoy.getMonth() + 1).toString().padStart(2, 0)
+            + "-" + hoy.getDate().toString().padStart(2, 0)
+    })
 
     const asignarRiesgo = async () =>{
-        console.log(riesgoForm)
+        if (ori_id === 0) {
+            Swal.fire("Error", "Seleccione el origen del riesgo", "error")
+        } else if (niv_id === 0) {
+            Swal.fire("Error", "Seleccione el nivel de riesgo", "error")
+        } else if (unidad_id === 0) {
+            Swal.fire("Error", "Seleccione el unidad responsable", "error")
+        } else {
+            const { value: confirm } = await Swal.fire({ title: "Atención", text: "¿Está seguro de actualizar este riesgo?", icon: "info", showCancelButton: true })
+            if (confirm) {
+                const riesgoString = "?" + stringify(riesgoForm)
+                const fechaEstadoString = "?" + stringify(fechaEstado)
+                console.log(riesgoString)
+                console.log(fechaEstadoString)
+            }
+        }
     }
 
     return (
@@ -206,9 +231,9 @@ const AsignarRiesgo = () => {
                             <div className="input-group">
                                 <label className="col-3 m-2">Origen:</label>
                                 <div className="col">
-                                    <select className="col form-select" value={origen}
+                                    <select className="col form-select" value={ori_id}
                                         onChange={(e) => {
-                                            setRiesgoForm({ ...riesgoForm, origen: parseInt(e.target.value),
+                                            setRiesgoForm({ ...riesgoForm, ori_id: parseInt(e.target.value),
                                                 rie_codigo: rieCodigo(parseInt(e.target.value)) });
                                         }}>
                                         <option key={0} value={0}>Elija un origen</option>
@@ -223,9 +248,9 @@ const AsignarRiesgo = () => {
                             <div className="input-group my-3">
                                 <label className="col-3 m-2">Nivel:</label>
                                 <div className="col">
-                                    <select className="col form-select" value={nivel}
+                                    <select className="col form-select" value={niv_id}
                                         onChange={(e) => {
-                                            setRiesgoForm({ ...riesgoForm, nivel: parseInt(e.target.value) });
+                                            setRiesgoForm({ ...riesgoForm, niv_id: parseInt(e.target.value) });
                                         }}>
                                         <option key={0} value={0}>Elija un nivel</option>
                                         {nivelRiesgo.map((nivel, index) => {
@@ -239,9 +264,9 @@ const AsignarRiesgo = () => {
                             <div className="input-group">
                                 <label className="col-3 m-2">Unidad Responsable:</label>
                                 <div className="col">
-                                    <select className="col form-select" value={unidad}
+                                    <select className="col form-select" value={unidad_id}
                                         onChange={(e) => {
-                                            setRiesgoForm({ ...riesgoForm, unidad: parseInt(e.target.value) });
+                                            setRiesgoForm({ ...riesgoForm, unidad_id: parseInt(e.target.value) });
                                         }}>
                                         <option key={0} value={0}>Elija una Unidad Responsable</option>
                                         {unidadRespon.map((unidad, index) => {
