@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import {setPosition as setPositionRedux} from "../../Store/slices/Position/index"
 
 const containerStyle = {
-    width: '88vw',
+    "width": "100%",
     height: '50vh'
 };
 
