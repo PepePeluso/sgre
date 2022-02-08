@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from 'react-redux'
-import { useHistory, useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 import { stringify } from "query-string"
 import axios from "axios"
@@ -8,6 +8,7 @@ import Navbar from "./navbar"
 
 const AsignarRiesgo = () => {
     const { numriesgo } = useLocation().state
+    const navigate = useNavigate()
     const riesgo = useSelector(state => state.RiesgoNoAsignado.riesgosNoAsignados[numriesgo])
     const urlMaps = "https://www.google.com/maps/place/" + riesgo.ubicacion[0].ubi_ubicacion
     const urlOrigen = "https://backend-sgre.herokuapp.com/origen"
@@ -15,7 +16,11 @@ const AsignarRiesgo = () => {
     const urlUnidad = "https://backend-sgre.herokuapp.com/unidad"
     const urlAntSeq = "https://backend-sgre.herokuapp.com/riesgoAntSeq"
     const urlNatSeq = "https://backend-sgre.herokuapp.com/riesgoNatSeq"
+    const urlFecha = "https://backend-sgre.herokuapp.com/updatefecha"
+    const urlPostFechaEstado = "https://backend-sgre.herokuapp.com/creafechaest"
+    const urlPutRiesgo = "https://backend-sgre.herokuapp.com/updateriesgot"
 
+    const hoy = new Date()
 
     const [origenRiesgo, setOrigenRiesgo] = useState([])
     const [nivelRiesgo, setNivelRiesgo] = useState([])
@@ -23,8 +28,6 @@ const AsignarRiesgo = () => {
     const [lastValueNat, setLasValueNat] = useState(0)
     const [lastValueAnt, setLasValueAnt] = useState(0)
     const [lastValueOth, setLasValueOth] = useState(0)
-
-    const hoy = new Date()
 
     const origenes = async () => {
         const resp = await axios.get(urlOrigen)
@@ -67,13 +70,28 @@ const AsignarRiesgo = () => {
         }
     }
 
+    const actualizarEstado = async () => {
+        if (riesgo.est_id === 1) {
+            let fecEstString = "?" + stringify(fechaEstado)
+            try {
+                fecEstString = fecEstString.replace("est_id=3", "est_id=2")
+                await axios.put(urlFecha + "?rie_idriesgo=" + riesgo.rie_idriesgo + "&est_id=2")
+                let resp = await axios.post(urlPostFechaEstado + fecEstString)
+                console.log(resp)
+            } catch (err) {
+                console.error(err)
+            }
+        }
+    }
+
     useEffect(() => {
-        const inicial = async () =>{
+        const inicial = async () => {
             await origenes()
             await niveles()
             await unidades()
             await antropicoSeq()
             await naturalSeq()
+            await actualizarEstado()
         }
         inicial()
     }, [])
@@ -98,10 +116,11 @@ const AsignarRiesgo = () => {
         niv_id: 0,
         est_id: 3,
         unidad_id: 0,
-        rie_codigo: ""
+        rie_codigo: "",
+        rie_idriesgo: riesgo.rie_idriesgo
     })
 
-    const { ori_id, niv_id, unidad_id} = riesgoForm
+    const { ori_id, niv_id, unidad_id } = riesgoForm
 
     const [fechaEstado, setFechaEstado] = useState({
         rie_idriesgo: riesgo.rie_idriesgo,
@@ -110,7 +129,7 @@ const AsignarRiesgo = () => {
             + "-" + hoy.getDate().toString().padStart(2, 0)
     })
 
-    const asignarRiesgo = async () =>{
+    const asignarRiesgo = async () => {
         if (ori_id === 0) {
             Swal.fire("Error", "Seleccione el origen del riesgo", "error")
         } else if (niv_id === 0) {
@@ -122,8 +141,23 @@ const AsignarRiesgo = () => {
             if (confirm) {
                 const riesgoString = "?" + stringify(riesgoForm)
                 const fechaEstadoString = "?" + stringify(fechaEstado)
-                console.log(riesgoString)
-                console.log(fechaEstadoString)
+                try {
+                    const putRiesgo = await axios.put(urlPutRiesgo + riesgoString)
+                    if (putRiesgo.data.code) {
+                        Swal.fire("Error", putRiesgo.data.message, "error")
+                    } else {
+                        const postFechaEstado = await axios.post(urlPostFechaEstado + fechaEstadoString)
+                        if (postFechaEstado.data.code) {
+                            Swal.fire("Error", postFechaEstado.data.message, "error")
+                        } else {
+                            Swal.fire("Perfecto", "Riesgo registrado con éxito", "success")
+                            navigate("/")
+                        }
+                    }
+                } catch (err) {
+                    console.error(err)
+                    Swal.fire("Error", "Error de la app", "error")
+                }
             }
         }
     }
@@ -233,8 +267,10 @@ const AsignarRiesgo = () => {
                                 <div className="col">
                                     <select className="col form-select" value={ori_id}
                                         onChange={(e) => {
-                                            setRiesgoForm({ ...riesgoForm, ori_id: parseInt(e.target.value),
-                                                rie_codigo: rieCodigo(parseInt(e.target.value)) });
+                                            setRiesgoForm({
+                                                ...riesgoForm, ori_id: parseInt(e.target.value),
+                                                rie_codigo: rieCodigo(parseInt(e.target.value))
+                                            });
                                         }}>
                                         <option key={0} value={0}>Elija un origen</option>
                                         {origenRiesgo.map((origen, index) => {
