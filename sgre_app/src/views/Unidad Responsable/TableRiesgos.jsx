@@ -7,7 +7,7 @@ import { Link } from "react-router-dom"
 import { setRiesgosUnidad } from "../../Store/slices/RiesgoUnidad"
 
 const TableRiesgos = () => {
-    const unidadResponsableID = 1
+    const unidadResponsableID = useSelector(state => state.RiesgoUnidad.unidad_id)
     const dispatch = useDispatch()
 
     const url = "https://backend-sgre.herokuapp.com/riesgoU"
@@ -20,6 +20,7 @@ const TableRiesgos = () => {
         setCargando(true)
         dispatch(setRiesgosUnidad([]))
         const getRiesgosU = async () => {
+            console.log(unidadResponsableID)
             const consulta = await axios.get(url + "?unidad_id=" + unidadResponsableID.toString())
             if (consulta.data.error === 0) { }
             else {
