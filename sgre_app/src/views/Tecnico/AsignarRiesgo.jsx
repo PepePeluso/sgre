@@ -160,7 +160,7 @@ const AsignarRiesgo = () => {
                                 const ori = await axios.get(urlAntNext)
                                 console.log(ori.data)
                             }
-                            Swal.fire("Perfecto", "Riesgo registrado con éxito", "success")
+                            Swal.fire("Perfecto", "Riesgo asignado con éxito", "success")
                             navigate("/")
                         }
                     }

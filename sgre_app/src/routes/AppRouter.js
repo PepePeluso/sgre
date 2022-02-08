@@ -10,6 +10,7 @@ import TableRiesgos from "../views/Unidad Responsable/TableRiesgos";
 import Principal from "../views/Administrador/Principal";
 import { setUnidadID } from "../Store/slices/RiesgoUnidad";
 import VisualizarRiesgo from "../views/Unidad Responsable/VisualizarRiesgo";
+import CrearUsuarios from "../views/Administrador/CrearUsuarios";
 
 export const AppRouter = () => {
 
@@ -90,6 +91,7 @@ export const AppRouter = () => {
         if (userToken === 1){
             return (
                 <Fragment>
+                    <Route exact path="/administrador/usuarios" element={<CrearUsuarios />} />
                     <Route exact path="/administrador" element={<Principal />} />
                     <Route exact path="/" element={<Navigate to="/administrador"/>} />
                 </Fragment>
@@ -97,6 +99,7 @@ export const AppRouter = () => {
         } else {
             return(
                 <Fragment>
+                    <Route exact path="/administrador/usuarios" element={<Navigate to="/"/>} />
                     <Route exact path="/administrador" element={<Navigate to="/"/>} />
                 </Fragment>
             )
