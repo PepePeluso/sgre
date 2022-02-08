@@ -79,6 +79,10 @@ const RegistroRiesgo = () => {
         );
     };
 
+    const validateTelef = (telefono) => {
+        return telefono.match("[0-9]+");
+    }
+
     const RegistrarRiesgo = async () => {
         if (tipo_id === 0) {
             Swal.fire("Error", "Seleccione el tipo de riesgo", "error")
@@ -90,8 +94,10 @@ const RegistroRiesgo = () => {
         } else if ((rie_nombre === "") || (rie_correo === "") || (rie_telefono === "")) {
             Swal.fire("Error", "Los datos de contacto están incompletos", "error")
         } else if (validateEmail(rie_correo) === null) {
-            Swal.fire("Error", "Ingrese un correo valido", "error")
-        } else {
+            Swal.fire("Error", "Ingrese un correo válido", "error")
+        } else if(validateTelef(rie_telefono) === null || ((rie_telefono.length !== 7) && (rie_telefono.length !== 10))){
+            Swal.fire("Error", "Ingrese un teléfono válido", "error")
+        }  else {
             const { value: confirm } = await Swal.fire({ title: "Atención", text: "¿Está seguro de registrar este riesgo?", icon: "info", showCancelButton: true })
             if (confirm) {
                 const ubicacionString = "?" + stringify(LocalizacionForm,{encode:false})
@@ -151,7 +157,7 @@ const RegistroRiesgo = () => {
                                 <div className="col">
                                     <select className="col form-select" value={tipo_id}
                                         onChange={(e) => {
-                                            setRiesgoForm({ ...RiesgoForm, tipo_id: e.target.value });
+                                            setRiesgoForm({ ...RiesgoForm, tipo_id: parseInt(e.target.value) });
                                         }}>
                                         <option value={0}>Elija un tipo</option>
                                         {TipoRiesgo.map((tipo, index) => {
