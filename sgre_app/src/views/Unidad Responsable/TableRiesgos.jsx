@@ -40,12 +40,12 @@ const TableRiesgos = () => {
     return (
         <div>
             <Navbar />
-            <div className="row-m-3">
+            <div className="row m-3">
                 <div className="container-fluid">
                     <h2>Riesgos Asignados</h2>
-                    <div className="table-responsive m 3">
+                    <div className="table-responsive m-3">
                         <table className="table" >
-                            <thead>
+                            <thead className="thead-dark">
                                 <tr>
                                     {titulos.map((titulo, index) => {
                                         return (

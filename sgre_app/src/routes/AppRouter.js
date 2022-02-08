@@ -9,6 +9,7 @@ import AsignarRiesgo from "../views/Tecnico/AsignarRiesgo";
 import TableRiesgos from "../views/Unidad Responsable/TableRiesgos";
 import Principal from "../views/Administrador/Principal";
 import { setUnidadID } from "../Store/slices/RiesgoUnidad";
+import VisualizarRiesgo from "../views/Unidad Responsable/VisualizarRiesgo";
 
 export const AppRouter = () => {
 
@@ -70,6 +71,7 @@ export const AppRouter = () => {
             return (
                 <Fragment>
                     <Route exact path="/unidadresponsable" element={<TableRiesgos />} />
+                    <Route exact path="/visualizarriesgo" element={<VisualizarRiesgo />} />
                     <Route exact path="/" element={<Navigate to="/unidadresponsable"/>} />
                 </Fragment>
             )
@@ -77,6 +79,7 @@ export const AppRouter = () => {
             return(
                 <Fragment>
                     <Route exact path="/unidadresponsable" element={<Navigate to="/"/>} />
+                    <Route exact path="/visualizarriesgo" element={<Navigate to="/" />} />
                 </Fragment>
             )
         }

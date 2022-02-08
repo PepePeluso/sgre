@@ -24,7 +24,7 @@ const Navbar = () => {
                     <ul className="navbar-nav">
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Bienvenido, bombero</a>
+                                data-bs-toggle="dropdown" aria-expanded="false">Bienvenido</a>
                             <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <li>
                                     <p className="dropdown-item" onClick={cerrarSesion}>Cerrar sesión</p>

@@ -16,6 +16,8 @@ const AsignarRiesgo = () => {
     const urlUnidad = "https://backend-sgre.herokuapp.com/unidad"
     const urlAntSeq = "https://backend-sgre.herokuapp.com/riesgoAntSeq"
     const urlNatSeq = "https://backend-sgre.herokuapp.com/riesgoNatSeq"
+    const urlAntNext = "https://backend-sgre.herokuapp.com/riesgoAntNext"
+    const urlNatNext = "https://backend-sgre.herokuapp.com/riesgoNatNext"
     const urlFecha = "https://backend-sgre.herokuapp.com/updatefecha"
     const urlPostFechaEstado = "https://backend-sgre.herokuapp.com/creafechaest"
     const urlPutRiesgo = "https://backend-sgre.herokuapp.com/updateriesgot"
@@ -140,6 +142,7 @@ const AsignarRiesgo = () => {
             const { value: confirm } = await Swal.fire({ title: "Atención", text: "¿Está seguro de actualizar este riesgo?", icon: "info", showCancelButton: true })
             if (confirm) {
                 const riesgoString = "?" + stringify(riesgoForm)
+                console.log(riesgoString)
                 const fechaEstadoString = "?" + stringify(fechaEstado)
                 try {
                     const putRiesgo = await axios.put(urlPutRiesgo + riesgoString)
@@ -150,6 +153,13 @@ const AsignarRiesgo = () => {
                         if (postFechaEstado.data.code) {
                             Swal.fire("Error", postFechaEstado.data.message, "error")
                         } else {
+                            if (ori_id === 1){
+                                const ori = await axios.get(urlNatNext)
+                                console.log(ori.data)
+                            } else {
+                                const ori = await axios.get(urlAntNext)
+                                console.log(ori.data)
+                            }
                             Swal.fire("Perfecto", "Riesgo registrado con éxito", "success")
                             navigate("/")
                         }
